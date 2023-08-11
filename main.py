@@ -16,9 +16,11 @@ def main():
         case "-h":
             print(help)
 
-        case "add items" or "add item":
+        case "add items":
             item_handling.add_item()
 
 
 if __name__ == "__main__":
     main()
+
+item_handling.fh.close()
