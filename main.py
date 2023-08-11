@@ -4,6 +4,9 @@ print("Type -h for help")
 
 help = """
 //type some help
+
+add items - adds new item
+
 """
 
 def main():
