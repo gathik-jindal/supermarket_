@@ -3,9 +3,12 @@ import item_handling
 print("Type -h for help")
 
 help = """
-//type some help
 
-add items - adds new item
+add item - adds a new item
+
+search item - searches for an item using serial or name
+
+delete item - deletes an item using serial number
 
 """
 
@@ -19,11 +22,30 @@ def main():
         case "-h":
             print(help)
 
-        case "add items":
+            return 1
+
+        case "add item":
             item_handling.add_item()
+
+            return 1
+
+        case "search item":
+            serial_or_name = input("Search by serial or name: ")
+            item_handling.search_item(serial_or_name)
+
+            return 1
+
+        case "delete item":
+            item_handling.delete_item()
+
+            return 1
+
+        case "quit":
+
+            return 0
 
 
 if __name__ == "__main__":
-    main()
-
-item_handling.fh.close()
+    ret = 1
+    while ret != 0:
+        ret = main()
