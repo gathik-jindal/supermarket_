@@ -12,6 +12,9 @@ def add_item():
 
         item1 = item()
 
+        df = pd.read_csv(CSV_FILE_NAME)
+        item1.serial_num_gen(df)
+
         item1.get_details()
 
         fh.seek(0, 2)
@@ -56,7 +59,7 @@ def delete_item():
 
     df = pd.read_csv(CSV_FILE_NAME)
     df = df.drop(pos)
-    df.to_csv(CSV_FILE_NAME, index=False)
+    df.to_csv(CSV_FILE_NAME, index=False, header=HEADER)
         
     print("deletion complete")
 

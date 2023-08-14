@@ -18,10 +18,10 @@ class item:
         
     def get_details(self):
 
-        self.serial_num = input("Enter serial number: ")
-        while not self.serial_num.isalnum():
-            print("Error: serial number should only contain numbers and letters!")
-            self.serial_num = input("Enter serial number: ")
+        # self.serial_num = input("Enter serial number: ")
+        # while not self.serial_num.isalnum():
+        #     print("Error: serial number should only contain numbers and letters!")
+        #     self.serial_num = input("Enter serial number: ")
 
         self.item_name = input("Enter item name: ")
         while not self.item_name.isalnum():
@@ -42,3 +42,10 @@ class item:
         while not self.discount.isnumeric():
             print("Error: discount should only contain numbers!")
             self.discount = input("Enter discount on price: ")
+
+    def serial_num_gen(self, df):
+        #write some useful generator code
+
+        serial_num = df.iloc[-1][0] + 1
+
+        self.serial_num = serial_num
