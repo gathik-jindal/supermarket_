@@ -31,12 +31,17 @@ def main():
 
         case "search item":
             serial_or_name = input("Search by serial or name: ")
+            while serial_or_name != "serial" or serial_or_name != "name":
+                serial_or_name = input("Search by serial or name: ")
             item_handling.search_item(serial_or_name)
 
             return 1
 
         case "delete item":
-            item_handling.delete_item()
+            serial_or_name = input("Search by serial or name: ")
+            while serial_or_name != "serial" or serial_or_name != "name":
+                serial_or_name = input("Search by serial or name: ")
+            item_handling.delete_item(serial_or_name)
 
             return 1
 

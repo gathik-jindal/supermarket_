@@ -1,3 +1,5 @@
+HEADER = ["Serial number", "Item name", "Price", "Price type", "Discount"]
+
 class item:
     def __init__(self, serial_num='', item_name='', price='', price_type='', discount=''):
         self.serial_num = serial_num
@@ -6,22 +8,16 @@ class item:
         self.price_type = price_type
         self.discount = discount
 
-    def write_row(self, writer):
-        
-        writer.writerow({
-            "Serial number": self.serial_num, 
-            "Item name": self.item_name,
-            "Price": self.price,
-            "Price type": self.price_type,
-            "Discount": self.discount
-            })
-        
-    def get_details(self):
+        self.update_dict()
 
-        # self.serial_num = input("Enter serial number: ")
-        # while not self.serial_num.isalnum():
-        #     print("Error: serial number should only contain numbers and letters!")
-        #     self.serial_num = input("Enter serial number: ")
+    def update_dict(self):
+        self.dict = {HEADER[0]: [self.serial_num],
+                     HEADER[1]: [self.item_name],
+                     HEADER[2]: [self.price],
+                     HEADER[3]: [self.price_type],
+                     HEADER[4]: [self.discount]}
+
+    def get_details(self):
 
         self.item_name = input("Enter item name: ")
         while not self.item_name.isalnum():
@@ -43,9 +39,19 @@ class item:
             print("Error: discount should only contain numbers!")
             self.discount = input("Enter discount on price: ")
 
-    def serial_num_gen(self, df):
+        self.update_dict()
+
+    def serial_num_gen(self, df, file_does_not_exist):
         #write some useful generator code
 
-        serial_num = df.iloc[-1][0] + 1
+        try:
+            if not file_does_not_exist:
+                self.serial_num = str(int(df.iloc[-1][0]) + 1)
+            else:
+                self.serial_num = "1"
 
-        self.serial_num = serial_num
+            self.update_dict()
+
+        except TypeError:
+            print("File corrupt")
+            quit()

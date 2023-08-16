@@ -3,66 +3,63 @@ from item_class import item
 import pandas as pd
 
 HEADER = ["Serial number", "Item name", "Price", "Price type", "Discount"]
-CSV_FILE_NAME = "item_Database.csv"
+CSV_FILE_NAME = "item_Database_test.csv"
+
+def get_df():
+    df = pd.read_csv(CSV_FILE_NAME)
+    for x in range(len(HEADER)):
+        df[HEADER[x]] = df[HEADER[x]].astype("string")
+
+    return df
 
 def add_item():
 
-    with open(CSV_FILE_NAME, "r+", newline='') as fh:
-        writer = csv.DictWriter(fh, fieldnames=HEADER)
+    df = get_df()
 
-        item1 = item()
+    item1 = item()
+    item1.serial_num_gen(df, file_does_not_exist)
+    item1.get_details()
 
-        df = pd.read_csv(CSV_FILE_NAME)
-        item1.serial_num_gen(df)
+    df_to_add = pd.DataFrame.from_dict(item1.dict)
+    df = pd.concat([df, df_to_add], ignore_index=True)
 
-        item1.get_details()
-
-        fh.seek(0, 2)
-        item1.write_row(writer)
-
-        print("written row")
+    df.to_csv(CSV_FILE_NAME, index=False)
 
 def search_item(serial_or_name="serial"):
     
-    with open(CSV_FILE_NAME, "r", newline='') as fh:
-        reader = csv.DictReader(fh, fieldnames=HEADER)
+    df = get_df()
 
-        pos = -2
+    match serial_or_name:
 
-        match serial_or_name:
+        case "serial":
+            print(df.loc[df[HEADER[0]] == input("Serial Number: ")])
 
-            case "serial":
-                find_serial = input("Enter serial number: ")
+        case "name":
+            print(df.loc[df[HEADER[1]] == input("Item Name: ")])
 
-                for row in reader:
-                    pos += 1
-                    if row[HEADER[0]] == find_serial:
-                        print(row)
-                        break
+    # return pos
 
-            case "name":
-                find_name = input("Enter name: ")
-
-                for row in reader:
-                    pos += 1
-                    if row[HEADER[1]] == find_name:
-                        print(row)
-                        break
-
-        print("completed search")
-
-    return pos
-
-def delete_item():
+def delete_item(serial_or_name="serial"):
     
-    pos = search_item()
+    df = get_df()
 
-    df = pd.read_csv(CSV_FILE_NAME)
-    df = df.drop(pos)
-    df.to_csv(CSV_FILE_NAME, index=False, header=HEADER)
-        
-    print("deletion complete")
+    match serial_or_name:
 
+        case "serial":
+            ser = input("Serial number: ")
+            print(df.loc[df[HEADER[0]] == ser])
+            y_n = input("Are you sure you want to delete this item(Y/n): ")
+            if y_n == "Y" or y_n == "y":
+                df = df[df[HEADER[0]] != ser]
+
+        case "name":
+            name = input("Item name: ")
+            print(df.loc[df[HEADER[1]] == name])
+            y_n = input("Are you sure you want to delete this item(Y/n): ")
+            if y_n == "Y" or y_n == "y":
+                df = df[df[HEADER[1]] != name]
+
+    df.to_csv(CSV_FILE_NAME)
 
 # Initialising file
 
@@ -76,6 +73,7 @@ except FileNotFoundError:
 writer = csv.DictWriter(fh, fieldnames=HEADER)
 if file_does_not_exist:
     writer.writeheader()
+
 fh.close()
 
 if __name__ == "__main__":
