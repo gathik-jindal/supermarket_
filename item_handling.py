@@ -1,97 +1,117 @@
 import csv
 from item_class import item
-import panda as pd
+import pandas as pd
 
 HEADER = ["Serial number", "Item name", "Price", "Price type", "Discount"]
+CSV_FILE_NAME = "item_Database_test.csv"
 
-# add item function
+def get_df():
+    df = pd.read_csv(CSV_FILE_NAME)
+    for x in range(len(HEADER)):
+        df[HEADER[x]] = df[HEADER[x]].astype("string")
+
+    return df
+
+def show_items():
+    print(get_df())
 
 def add_item():
 
-    with open("item_Database.csv", "r+", newline='') as fh:
-        writer = csv.DictWriter(fh, fieldnames=HEADER)
+    df = get_df()
 
-        serial_num = input("Enter serial number: ")
-        item_name = input("Enter item name: ")
-        price = input("Item price: ")
-        price_type = input("Price type (if by quantity type \"qty\", if by bunch \"bnch\"): ")
-        discount = input("Enter discount on price: ")
+    item1 = item()
+    item1.serial_num_gen(df, file_does_not_exist)
+    item1.get_details()
 
-        if price == '':
-            price = 0
-        if price_type == '':
-            price_type = "bnch"
-        if discount == '':
-            discount = 0
+    df_to_add = pd.DataFrame.from_dict(item1.dict)
+    df = pd.concat([df, df_to_add], ignore_index=True)
 
-        item1 = item(serial_num, item_name, price, price_type, discount)
+    df.to_csv(CSV_FILE_NAME, index=False)
 
-        fh.seek(0, 2)
-        item1.write_row(writer)
-
-        print("written row")
-
-def search_item(serial_or_name="serial"):
+def search_item(serial_or_name="serial", ser='', name=''):
     
-    with open("item_Database.csv", "r", newline='') as fh:
-        reader = csv.DictReader(fh, fieldnames=HEADER)
+    df = get_df()
 
-        pos = fh.tell()
+    match serial_or_name:
 
-        match serial_or_name:
+        case "serial":
+            if ser != '':
+                df_temp = df.loc[df[HEADER[0]] == ser]
 
-            case "serial":
-                find_serial = input("Enter serial number: ")
+                if not df_temp.empty:
+                    print(df_temp)
+                else:
+                    return 1 # could not find item
+            
+            else:
+                df_temp = df.loc[df[HEADER[0]] == input("Serial Number: ")]
 
-                for row in reader:
-                    if row[HEADER[0]] == find_serial:
-                        print(row)
-                        break
+                if not df_temp.empty:
+                    print(df_temp)
+                else:
+                    return 1 # could not find item
 
-            case "name":
-                find_name = input("Enter name: ")
+        case "name":
+            if name != '':
+                df_temp = df.loc[df[HEADER[1]] == name]
+                
+                if not df_temp.empty:
+                    print(df_temp)
+                else:
+                    return 1 # could not find item
+            
+            else:
+                df_temp = df.loc[df[HEADER[1]] == input("Item Name: ")]
 
-                for row in reader:
-                    if row[HEADER[1]] == find_name:
-                        print(row)
-                        break
+                if not df_temp.empty:
+                    print(df_temp)
+                else:
+                    return 1 # could not find item
 
-        print("completed search")
-
-    return pos
-
-def delete_item():
+def delete_item(serial_or_name="serial"):
     
-    pos = search_item()
+    df = get_df()
 
-    with open("item_Database.csv", "r+") as fh:
-        writer = csv.DictWriter(fh, fieldnames=HEADER)
+    match serial_or_name:
 
-        fh.seek(pos)
+        case "serial":
+            ser = input("Serial number: ")
 
-        writer.writerow({
-            "Serial number": None,
-            "Item name": None,
-            "Price": None,
-            "Price type": None,
-            "Discount": None
-            })
-        
-        print("deletion complete")
+            if search_item(serial_or_name=serial_or_name, ser=ser) == 1:
+                return 1 # could not find item to delete
+            
+            else:
+                y_n = input("Are you sure you want to delete this item(Y/n): ")
+                if y_n == "Y" or y_n == "y":
+                    df = df[df[HEADER[0]] != ser]
 
+        case "name":
+            name = input("Item name: ")
+
+            if search_item(serial_or_name=serial_or_name, name=name) == 1:
+                return 1 # could not find item to delete
+            else:
+                y_n = input("Are you sure you want to delete this item(Y/n): ")
+                if y_n == "Y" or y_n == "y":
+                    df = df[df[HEADER[1]] != name]
+
+    df.to_csv(CSV_FILE_NAME, index=False)
+
+    return 0
 
 # Initialising file
 
 file_does_not_exist = False
 try:
-    fh = open("item_Database.csv", "r", newline='')
+    fh = open(CSV_FILE_NAME, "r", newline='')
 except FileNotFoundError:
-    fh = open("item_Database.csv", "w", newline='')
+    fh = open(CSV_FILE_NAME, "w", newline='')
     file_does_not_exist = True
 
 writer = csv.DictWriter(fh, fieldnames=HEADER)
 if file_does_not_exist:
     writer.writeheader()
+
 fh.close()
 
 if __name__ == "__main__":
