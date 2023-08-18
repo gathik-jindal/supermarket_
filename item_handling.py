@@ -12,6 +12,9 @@ def get_df():
 
     return df
 
+def show_items():
+    print(get_df())
+
 def add_item():
 
     df = get_df()
@@ -25,19 +28,45 @@ def add_item():
 
     df.to_csv(CSV_FILE_NAME, index=False)
 
-def search_item(serial_or_name="serial"):
+def search_item(serial_or_name="serial", ser='', name=''):
     
     df = get_df()
 
     match serial_or_name:
 
         case "serial":
-            print(df.loc[df[HEADER[0]] == input("Serial Number: ")])
+            if ser != '':
+                df_temp = df.loc[df[HEADER[0]] == ser]
+
+                if not df_temp.empty:
+                    print(df_temp)
+                else:
+                    return 1 # could not find item
+            
+            else:
+                df_temp = df.loc[df[HEADER[0]] == input("Serial Number: ")]
+
+                if not df_temp.empty:
+                    print(df_temp)
+                else:
+                    return 1 # could not find item
 
         case "name":
-            print(df.loc[df[HEADER[1]] == input("Item Name: ")])
+            if name != '':
+                df_temp = df.loc[df[HEADER[1]] == name]
+                
+                if not df_temp.empty:
+                    print(df_temp)
+                else:
+                    return 1 # could not find item
+            
+            else:
+                df_temp = df.loc[df[HEADER[1]] == input("Item Name: ")]
 
-    # return pos
+                if not df_temp.empty:
+                    print(df_temp)
+                else:
+                    return 1 # could not find item
 
 def delete_item(serial_or_name="serial"):
     
@@ -47,19 +76,28 @@ def delete_item(serial_or_name="serial"):
 
         case "serial":
             ser = input("Serial number: ")
-            print(df.loc[df[HEADER[0]] == ser])
-            y_n = input("Are you sure you want to delete this item(Y/n): ")
-            if y_n == "Y" or y_n == "y":
-                df = df[df[HEADER[0]] != ser]
+
+            if search_item(serial_or_name=serial_or_name, ser=ser) == 1:
+                return 1 # could not find item to delete
+            
+            else:
+                y_n = input("Are you sure you want to delete this item(Y/n): ")
+                if y_n == "Y" or y_n == "y":
+                    df = df[df[HEADER[0]] != ser]
 
         case "name":
             name = input("Item name: ")
-            print(df.loc[df[HEADER[1]] == name])
-            y_n = input("Are you sure you want to delete this item(Y/n): ")
-            if y_n == "Y" or y_n == "y":
-                df = df[df[HEADER[1]] != name]
 
-    df.to_csv(CSV_FILE_NAME)
+            if search_item(serial_or_name=serial_or_name, name=name) == 1:
+                return 1 # could not find item to delete
+            else:
+                y_n = input("Are you sure you want to delete this item(Y/n): ")
+                if y_n == "Y" or y_n == "y":
+                    df = df[df[HEADER[1]] != name]
+
+    df.to_csv(CSV_FILE_NAME, index=False)
+
+    return 0
 
 # Initialising file
 
