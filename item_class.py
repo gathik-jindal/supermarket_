@@ -16,6 +16,13 @@ class item:
                      HEADER[2]: [self.price],
                      HEADER[3]: [self.price_type],
                      HEADER[4]: [self.discount]}
+    
+    def get_real_dict(self):
+        self.dict = {HEADER[0]: self.serial_num,
+                     HEADER[1]: self.item_name,
+                     HEADER[2]: self.price,
+                     HEADER[3]: self.price_type,
+                     HEADER[4]: self.discount}
 
     def get_details(self):
 

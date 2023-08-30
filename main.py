@@ -22,7 +22,7 @@ def main():
     # possible outputs for command
 
     match command:
-
+        
         case "-h":
             print(help)
 
@@ -47,6 +47,11 @@ def main():
                 print("Item does not exist")
 
             return 1 # restarts program
+
+        case "modify item":
+            item_handling.modify_item()
+
+            return 1 # restarts the program
 
         case "delete item":
             serial_or_name = input("Delete by serial or name: ")
