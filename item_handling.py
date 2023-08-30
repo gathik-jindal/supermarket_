@@ -68,6 +68,68 @@ def search_item(serial_or_name="serial", ser='', name=''):
                 else:
                     return 1 # could not find item
 
+def modify_item():
+    ser_or_name = input("Get item with serial or name: ")
+    while not (ser_or_name == "serial" or ser_or_name == "name"):
+        ser_or_name = input("Get item with serial or name: ")
+
+    match ser_or_name:
+
+        case "serial":
+            ser = input("Serial number: ")
+            if search_item(serial_or_name="serial", ser=ser) == 1: # checking if item exists
+                print("Item to modify does not exist")
+                return 1 # item does not exist
+            else:
+                y_n = input("Are you sure you want to modify this item(Y/n): ")
+
+                if y_n == "y" or y_n == "Y":
+                    df = get_df()
+
+                    index = df[df[HEADER[0]] == ser].index[0]
+
+                    item1 = item()
+                    item1.serial_num_gen(df, file_does_not_exist)
+                    item1.get_details()
+                    item1.get_real_dict()
+
+                    print(index)
+
+                    df.iloc[index] = item1.dict
+
+                    df.to_csv(CSV_FILE_NAME, index=False)
+
+                    print("Modification doen successfully")
+                    return 0 # success!
+                
+        case "name":
+            name = input("Item name: ")
+            if search_item(serial_or_name="name", name=name) == 1: # checking if item exists
+                print("Item to modify does not exist")
+                return 1 # item does not exist
+            else:
+                y_n = input("Are you sure you want to modify this item(Y/n): ")
+
+                if y_n == "y" or y_n == "Y":
+                    df = get_df()
+
+                    index = df[df[HEADER[1]] == name].index[0]
+
+                    item1 = item()
+                    item1.serial_num_gen(df, file_does_not_exist)
+                    item1.get_details()
+                    item1.get_real_dict()
+
+                    print(index)
+
+                    df.iloc[index] = item1.dict
+
+                    df.to_csv(CSV_FILE_NAME, index=False)
+
+                    print("Modification done successfully")
+                    return 0 # success!
+
+
 def delete_item(serial_or_name="serial"):
     
     df = get_df()
@@ -115,4 +177,4 @@ if file_does_not_exist:
 fh.close()
 
 if __name__ == "__main__":
-    delete_item()
+    modify_item()
